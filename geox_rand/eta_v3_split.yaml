@@ -1,0 +1,78 @@
+xp_domain:
+# domain of the experiment
+# example: growth, catalog, fulfillment
+  fulfillment
+
+xp_name:
+# name of the experiment
+  eta_v3_q1b
+
+date_col:
+# the date col name in the underlying feature table
+# example: date_pt, ds
+  date
+
+rand_unit:
+# the geo unit for randomization
+# example: dma_id, zone_id, region_id
+  zone_id
+
+rand_date_range:
+# the start and end date to pull historical data for randomization
+  start_date: "2022-02-22"
+  end_date: "2022-03-21"
+
+rand_constraint:
+# the geo constrains for randomization, can be hardcoded (exclusion or inclusion), or dynamic (through a SQL snippet)
+# valid example: exclusion, inclusion or dynamic
+
+  # exclusion:
+  #   - 644
+  #   - 500
+  #   - 551
+
+  dynamic:
+  # a subquery to define the geo ids to include
+  # https://experiments.instacart.tools/roulette_groups/priority_eta_delivery_option
+    select distinct id as zone_id from rds_data.zones 
+
+rand_method:
+# method to run randomization
+# valid example: time_based_regression, diff_in_diff
+  time_based_regression
+
+variants:
+    num_variants:
+    # number of total variants to split
+        2
+    
+    num_of_geos_in_each_variant:
+    # diff_in_diff method currently only supports same number of geos in each variant
+        
+    
+    weight_of_geos_in_each_variant:
+    # the weight (percentage) of geos in each variant, used in time_based_regression method
+      - 0.50
+      - 0.50     
+
+match_metrics:
+# objective metrics to match for
+  - seta_available_pct
+  - delivery_late_percent
+  - total_labor_cost_dollars
+
+control_metrics:
+# additional metrics to control for
+  - deliveries
+  
+weight_metric:
+# one single metric to weight each geo
+  visits
+
+metron_table:
+# underlying table for data pull for randomization
+
+minimum_detectable_effect:
+# not directly used for randomiztion, but is used for power analysis post randomization
+  0.01
+  
